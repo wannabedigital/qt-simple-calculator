@@ -66,6 +66,9 @@ void MainWindow::on_actionButton_comma_clicked()
     }
 
     QString currentCalculatorLineText = ui->calculatorLine->text();
+
+    if (currentCalculatorLineText.contains(',')) return;
+
     ui->calculatorLine->setText(currentCalculatorLineText + ",");
 }
 
@@ -135,8 +138,7 @@ double MainWindow::findNumber(QString& expression, int& pos)
             value += expression[pos].digitValue();
         } else {
             div *= 10;
-            frac += expression[pos].digitValue();
-            frac /= div;
+            frac += expression[pos].digitValue() / div;
         }
 
         pos++;
