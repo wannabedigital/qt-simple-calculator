@@ -175,3 +175,18 @@ void MainWindow::on_actionButton_equal_clicked()
     }
 }
 
+
+void MainWindow::on_actionButton_negate_clicked()
+{
+    QString currentCalculatorLineText = ui->calculatorLine->text();
+    if (currentCalculatorLineText.isEmpty() || currentCalculatorLineText == "0") return;
+
+    double negateNum = currentCalculatorLineText.toDouble();
+    negateNum *= -1;
+
+    QString strNegateNum;
+    strNegateNum.setNum(negateNum);
+
+    ui->calculatorLine->setText(strNegateNum);
+}
+

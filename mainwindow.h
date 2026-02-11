@@ -22,6 +22,8 @@ private slots:
 
     void mathOperation();
 
+    double calculate(double leftOperand, const QString &pendingOperator, double rightOperand);
+
     void on_actionButton_clear_clicked();
 
     void on_actionButton_allClear_clicked();
@@ -30,9 +32,7 @@ private slots:
 
     void on_actionButton_equal_clicked();
 
-    double calculate(double leftOperand, const QString &pendingOperator, double rightOperand);
-
-    // double findNumber(QString& expression, int& pos);
+    void on_actionButton_negate_clicked();
 
 private:
     Ui::MainWindow *ui;
