@@ -43,8 +43,10 @@ void MainWindow::on_actionButton_clear_clicked()
 void MainWindow::on_actionButton_allClear_clicked()
 {
     ui->calculatorLine->clear();
+    ui->displayExpressionLine->clear();
     pendingOperator = "";
     isWaitingOperand = true;
+    needClear = false;
 }
 
 void MainWindow::onDigitButtonClicked()
@@ -104,13 +106,19 @@ void MainWindow::mathOperation()
     double operand = currentCalculatorLineText.toDouble();
     QString clickedOperator = button->property("operation").toString();
 
+
     if (!pendingOperator.isEmpty()) {
         currentResult = calculate(currentResult, pendingOperator, operand);
         QString resultStr;
         resultStr.setNum(currentResult);
         ui->calculatorLine->setText(resultStr);
+        ui->displayExpressionLine->setText(resultStr + " " + clickedOperator);
+
     } else {
         currentResult = operand;
+        QString resultStr;
+        resultStr.setNum(currentResult);
+        ui->displayExpressionLine->setText(resultStr + " " + clickedOperator);
     }
 
     pendingOperator = clickedOperator;
@@ -153,6 +161,11 @@ void MainWindow::on_actionButton_equal_clicked()
         QString resultStr;
         resultStr.setNum(currentResult);
         ui->calculatorLine->setText(resultStr);
+
+        QString currentExpressionLine = ui->displayExpressionLine->text();
+        ui->displayExpressionLine->setText(
+            currentExpressionLine + " " + currentCalculatorLineText + " ="
+        );
 
         pendingOperator = "";
         isWaitingOperand = true;
