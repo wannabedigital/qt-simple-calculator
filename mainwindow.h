@@ -37,6 +37,8 @@ private slots:
 
     void on_actionButton_percent_clicked();
 
+    void on_actionButton_cos_clicked();
+
 private:
     Ui::MainWindow *ui;
 
