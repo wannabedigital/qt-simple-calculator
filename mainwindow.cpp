@@ -145,10 +145,16 @@ double MainWindow::findNumber(QString& expression, int& pos)
     return value+frac;
 }
 
-// TODO: фикс ошибки при нажатии на равно если есть только 1 число
+// TODO: Подписать ошибки
 
 void MainWindow::on_actionButton_equal_clicked()
 {
+    if (needClear) {
+        ui->calculatorLine->clear();
+        needClear = false;
+        return;
+    }
+
     QString expression = ui->calculatorLine->text();
     expression.replace("÷", "/");
     expression.replace("×", "*");
@@ -157,35 +163,58 @@ void MainWindow::on_actionButton_equal_clicked()
 
     if (expression.isEmpty()) {
         ui->calculatorLine->setText("Ошибка");
+        needClear = true;
+        return;
     } else {
         int position = 0;
 
         double num1 = findNumber(expression, position);
+        if (position >= expression.length()) {
+            ui->calculatorLine->setText("Ошибка");
+            needClear = true;
+            return;
+        }
 
         QChar op = expression[position++];
+        if (position >= expression.length()) {
+            ui->calculatorLine->setText("Ошибка");
+            needClear = true;
+            return;
+        }
 
         double num2 = findNumber(expression, position);
+        if (position < expression.length()) {
+            ui->calculatorLine->setText("Ошибка");
+            needClear = true;
+            return;
+        }
 
-        double result;
+        double result = 0.0;
 
         if (op == '+') {
             result = num1 + num2;
         } else if (op == '-') {
             result = num1 - num2;
         } else if (op == '/') {
-            if (num2 == 0) {
-                ui->calculatorLine->setText("Ошибка");
-            } else {
+            if (num2 != 0) {
                 result = num1 / num2;
+            } else {
+                ui->calculatorLine->setText("Ошибка");
+                needClear = true;
+                return;
             }
         } else if (op == '*') {
             result = num1 * num2;
+        } else {
+            ui->calculatorLine->setText("Ошибка");
+            needClear = true;
+            return;
         }
 
         QString strResult;
         strResult.setNum(result);
 
-        ui->calculatorLine->setText(strResult);
+        ui->calculatorLine->setText(strResult.replace(".", ","));
     }
 
     needClear = true;
