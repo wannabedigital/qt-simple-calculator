@@ -105,6 +105,8 @@ void MainWindow::mathOperation()
     QString currentCalculatorLineText = ui->calculatorLine->text();
     double operand = currentCalculatorLineText.toDouble();
     QString clickedOperator = button->property("operation").toString();
+    QString prettyOperator = clickedOperator;
+    prettyOperator.replace("/","÷").replace("*","×");
 
 
     if (!pendingOperator.isEmpty()) {
@@ -112,13 +114,13 @@ void MainWindow::mathOperation()
         QString resultStr;
         resultStr.setNum(currentResult);
         ui->calculatorLine->setText(resultStr);
-        ui->displayExpressionLine->setText(resultStr + " " + clickedOperator);
+        ui->displayExpressionLine->setText(resultStr + " " + prettyOperator);
 
     } else {
         currentResult = operand;
         QString resultStr;
         resultStr.setNum(currentResult);
-        ui->displayExpressionLine->setText(resultStr + " " + clickedOperator);
+        ui->displayExpressionLine->setText(resultStr + " " + prettyOperator);
     }
 
     pendingOperator = clickedOperator;
