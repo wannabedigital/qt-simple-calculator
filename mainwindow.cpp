@@ -122,7 +122,30 @@ void MainWindow::on_actionButton_addition_clicked()
     ui->calculatorLine->setText(currentCalculatorLineText + " + ");
 }
 
+double MainWindow::findNumber(QString& expression, int& pos)
+{
+    double value = 0, frac = 0, div = 1;
+    bool isFrac = false;
 
+    while (pos < expression.length() && (expression[pos].isDigit() || expression[pos] == '.')) {
+        if (expression[pos] == '.'){
+            isFrac = true;
+        } else if (!isFrac) {
+            value *= 10;
+            value += expression[pos].digitValue();
+        } else {
+            div *= 10;
+            frac += expression[pos].digitValue();
+            frac /= div;
+        }
+
+        pos++;
+    }
+
+    return value+frac;
+}
+
+// TODO: фикс ошибки при нажатии на равно если есть только 1 число
 
 void MainWindow::on_actionButton_equal_clicked()
 {
@@ -132,6 +155,39 @@ void MainWindow::on_actionButton_equal_clicked()
     expression.replace(",", ".");
     expression.replace(" ", "");
 
+    if (expression.isEmpty()) {
+        ui->calculatorLine->setText("Ошибка");
+    } else {
+        int position = 0;
 
+        double num1 = findNumber(expression, position);
+
+        QChar op = expression[position++];
+
+        double num2 = findNumber(expression, position);
+
+        double result;
+
+        if (op == '+') {
+            result = num1 + num2;
+        } else if (op == '-') {
+            result = num1 - num2;
+        } else if (op == '/') {
+            if (num2 == 0) {
+                ui->calculatorLine->setText("Ошибка");
+            } else {
+                result = num1 / num2;
+            }
+        } else if (op == '*') {
+            result = num1 * num2;
+        }
+
+        QString strResult;
+        strResult.setNum(result);
+
+        ui->calculatorLine->setText(strResult);
+    }
+
+    needClear = true;
 }
 

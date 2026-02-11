@@ -36,6 +36,8 @@ private slots:
 
     void on_actionButton_equal_clicked();
 
+    double findNumber(QString& expression, int& pos);
+
 private:
     Ui::MainWindow *ui;
 
