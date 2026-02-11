@@ -181,12 +181,25 @@ void MainWindow::on_actionButton_negate_clicked()
     QString currentCalculatorLineText = ui->calculatorLine->text();
     if (currentCalculatorLineText.isEmpty() || currentCalculatorLineText == "0") return;
 
-    double negateNum = currentCalculatorLineText.toDouble();
-    negateNum *= -1;
+    double negateNum = currentCalculatorLineText.toDouble() * (-1);
 
     QString strNegateNum;
     strNegateNum.setNum(negateNum);
 
     ui->calculatorLine->setText(strNegateNum);
+}
+
+
+void MainWindow::on_actionButton_percent_clicked()
+{
+    QString currentCalculatorLineText = ui->calculatorLine->text();
+    if (currentCalculatorLineText.isEmpty() || currentCalculatorLineText == "0") return;
+
+    double percentNum = currentCalculatorLineText.toDouble() * 0.01;
+
+    QString strPercentNum;
+    strPercentNum.setNum(percentNum);
+
+    ui->calculatorLine->setText(strPercentNum);
 }
 
