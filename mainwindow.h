@@ -37,6 +37,11 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
+    double currentResult = 0;
+
+    QString pendingOperator = "";
+
+    bool isWaitingOperand = true;
     bool needClear = false;
 };
 #endif // MAINWINDOW_H

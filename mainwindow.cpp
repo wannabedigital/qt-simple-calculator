@@ -1,10 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-double currentResult = 0;
-QString pendingOperator = "";
-bool isWaitingOperand = true;
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -47,6 +43,8 @@ void MainWindow::on_actionButton_clear_clicked()
 void MainWindow::on_actionButton_allClear_clicked()
 {
     ui->calculatorLine->clear();
+    pendingOperator = "";
+    isWaitingOperand = true;
 }
 
 void MainWindow::onDigitButtonClicked()
@@ -85,7 +83,7 @@ double MainWindow::calculate(double leftOperand, const QString &pendingOperator,
         if (rightOperand != 0) {
             return leftOperand / rightOperand;
         } else {
-            ui->calculatorLine->setText("Error");
+            ui->calculatorLine->setText("Ошибка: не найден оператор");
             isWaitingOperand = true;
             return 0;
         }
@@ -95,12 +93,16 @@ double MainWindow::calculate(double leftOperand, const QString &pendingOperator,
 
 void MainWindow::mathOperation()
 {
+    if (needClear) {
+        needClear = false;
+    }
+
     QPushButton *button = (QPushButton *)(sender());
     if (!button) return;
 
     QString currentCalculatorLineText = ui->calculatorLine->text();
     double operand = currentCalculatorLineText.toDouble();
-    QString clickedOperator = button->text();
+    QString clickedOperator = button->property("operation").toString();
 
     if (!pendingOperator.isEmpty()) {
         currentResult = calculate(currentResult, pendingOperator, operand);
@@ -113,14 +115,6 @@ void MainWindow::mathOperation()
 
     pendingOperator = clickedOperator;
     isWaitingOperand = true;
-
-
-    QString strCurrentResult;
-    strCurrentResult.setNum(currentResult);
-
-    ui->calculatorLine->setText("");
-
-    button->setChecked(true);
 }
 
 void MainWindow::on_actionButton_comma_clicked()
@@ -142,28 +136,6 @@ void MainWindow::on_actionButton_comma_clicked()
     ui->calculatorLine->setText(currentCalculatorLineText + ".");
 }
 
-// double MainWindow::findNumber(QString& expression, int& pos)
-// {
-//     double value = 0, frac = 0, div = 1;
-//     bool isFrac = false;
-
-//     while (pos < expression.length() && (expression[pos].isDigit() || expression[pos] == '.')) {
-//         if (expression[pos] == '.'){
-//             isFrac = true;
-//         } else if (!isFrac) {
-//             value *= 10;
-//             value += expression[pos].digitValue();
-//         } else {
-//             div *= 10;
-//             frac += expression[pos].digitValue() / div;
-//         }
-
-//         pos++;
-//     }
-
-//     return value+frac;
-// }
-
 void MainWindow::on_actionButton_equal_clicked()
 {
     if (needClear) {
@@ -184,6 +156,7 @@ void MainWindow::on_actionButton_equal_clicked()
 
         pendingOperator = "";
         isWaitingOperand = true;
+        needClear = true;
     }
 }
 
