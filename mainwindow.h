@@ -18,25 +18,21 @@ public:
     ~MainWindow();
 
 private slots:
+    void onDigitButtonClicked();
+
+    void mathOperation();
+
     void on_actionButton_clear_clicked();
 
     void on_actionButton_allClear_clicked();
 
-    void onDigitButtonClicked();
-
     void on_actionButton_comma_clicked();
-
-    void on_actionButton_div_clicked();
-
-    void on_actionButton_mult_clicked();
-
-    void on_actionButton_substraction_clicked();
-
-    void on_actionButton_addition_clicked();
 
     void on_actionButton_equal_clicked();
 
-    double findNumber(QString& expression, int& pos);
+    double calculate(double leftOperand, const QString &pendingOperator, double rightOperand);
+
+    // double findNumber(QString& expression, int& pos);
 
 private:
     Ui::MainWindow *ui;

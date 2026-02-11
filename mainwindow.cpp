@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+double currentResult = 0;
+QString pendingOperator = "";
+bool isWaitingOperand = true;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -17,6 +21,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->numButton_7, &QPushButton::clicked, this, &MainWindow::onDigitButtonClicked);
     connect(ui->numButton_8, &QPushButton::clicked, this, &MainWindow::onDigitButtonClicked);
     connect(ui->numButton_9, &QPushButton::clicked, this, &MainWindow::onDigitButtonClicked);
+
+    connect(ui->actionButton_div, &QPushButton::clicked, this, &MainWindow::mathOperation);
+    connect(ui->actionButton_mult, &QPushButton::clicked, this, &MainWindow::mathOperation);
+    connect(ui->actionButton_addition, &QPushButton::clicked, this, &MainWindow::mathOperation);
+    connect(ui->actionButton_substraction, &QPushButton::clicked, this, &MainWindow::mathOperation);
 }
 
 MainWindow::~MainWindow()
@@ -47,16 +56,72 @@ void MainWindow::onDigitButtonClicked()
         needClear = false;
     }
 
-    QPushButton *button = qobject_cast<QPushButton*>(sender());
+    QPushButton *button = (QPushButton *)(sender());
     if (!button) return;
+
+    if (isWaitingOperand) {
+        ui->calculatorLine->clear();
+        isWaitingOperand = false;
+    }
 
     QString digit = button->property("digit").toString();
 
     QString currentCalculatorLineText = ui->calculatorLine->text();
 
-    ui->calculatorLine->setText(currentCalculatorLineText + digit);
+    QString strNum = (currentCalculatorLineText + digit);
+
+    ui->calculatorLine->setText(strNum);
 }
 
+double MainWindow::calculate(double leftOperand, const QString &pendingOperator, double rightOperand)
+{
+    if (pendingOperator == "+") {
+        return leftOperand + rightOperand;
+    } else if (pendingOperator == "-") {
+        return leftOperand - rightOperand;
+    } else if (pendingOperator == "*") {
+        return leftOperand * rightOperand;
+    } else if (pendingOperator == "/") {
+        if (rightOperand != 0) {
+            return leftOperand / rightOperand;
+        } else {
+            ui->calculatorLine->setText("Error");
+            isWaitingOperand = true;
+            return 0;
+        }
+    }
+    return rightOperand;
+}
+
+void MainWindow::mathOperation()
+{
+    QPushButton *button = (QPushButton *)(sender());
+    if (!button) return;
+
+    QString currentCalculatorLineText = ui->calculatorLine->text();
+    double operand = currentCalculatorLineText.toDouble();
+    QString clickedOperator = button->text();
+
+    if (!pendingOperator.isEmpty()) {
+        currentResult = calculate(currentResult, pendingOperator, operand);
+        QString resultStr;
+        resultStr.setNum(currentResult);
+        ui->calculatorLine->setText(resultStr);
+    } else {
+        currentResult = operand;
+    }
+
+    pendingOperator = clickedOperator;
+    isWaitingOperand = true;
+
+
+    QString strCurrentResult;
+    strCurrentResult.setNum(currentResult);
+
+    ui->calculatorLine->setText("");
+
+    button->setChecked(true);
+}
 
 void MainWindow::on_actionButton_comma_clicked()
 {
@@ -65,89 +130,39 @@ void MainWindow::on_actionButton_comma_clicked()
         needClear = false;
     }
 
-    QString currentCalculatorLineText = ui->calculatorLine->text();
-
-    if (currentCalculatorLineText.contains(',')) return;
-
-    ui->calculatorLine->setText(currentCalculatorLineText + ",");
-}
-
-
-
-
-void MainWindow::on_actionButton_div_clicked()
-{
-    if (needClear) {
-        ui->calculatorLine->clear();
-        needClear = false;
+    if (isWaitingOperand) {
+        ui->calculatorLine->setText("0");
+        isWaitingOperand = false;
     }
 
     QString currentCalculatorLineText = ui->calculatorLine->text();
-    ui->calculatorLine->setText(currentCalculatorLineText + " ÷ ");
+
+    if (currentCalculatorLineText.contains('.')) return;
+
+    ui->calculatorLine->setText(currentCalculatorLineText + ".");
 }
 
+// double MainWindow::findNumber(QString& expression, int& pos)
+// {
+//     double value = 0, frac = 0, div = 1;
+//     bool isFrac = false;
 
+//     while (pos < expression.length() && (expression[pos].isDigit() || expression[pos] == '.')) {
+//         if (expression[pos] == '.'){
+//             isFrac = true;
+//         } else if (!isFrac) {
+//             value *= 10;
+//             value += expression[pos].digitValue();
+//         } else {
+//             div *= 10;
+//             frac += expression[pos].digitValue() / div;
+//         }
 
+//         pos++;
+//     }
 
-void MainWindow::on_actionButton_mult_clicked()
-{
-    if (needClear) {
-        ui->calculatorLine->clear();
-        needClear = false;
-    }
-
-    QString currentCalculatorLineText = ui->calculatorLine->text();
-    ui->calculatorLine->setText(currentCalculatorLineText + " × ");
-}
-
-void MainWindow::on_actionButton_substraction_clicked()
-{
-    if (needClear) {
-        ui->calculatorLine->clear();
-        needClear = false;
-    }
-
-    QString currentCalculatorLineText = ui->calculatorLine->text();
-    ui->calculatorLine->setText(currentCalculatorLineText + " - ");
-}
-
-
-
-
-void MainWindow::on_actionButton_addition_clicked()
-{
-    if (needClear) {
-        ui->calculatorLine->clear();
-        needClear = false;
-    }
-
-    QString currentCalculatorLineText = ui->calculatorLine->text();
-    ui->calculatorLine->setText(currentCalculatorLineText + " + ");
-}
-
-double MainWindow::findNumber(QString& expression, int& pos)
-{
-    double value = 0, frac = 0, div = 1;
-    bool isFrac = false;
-
-    while (pos < expression.length() && (expression[pos].isDigit() || expression[pos] == '.')) {
-        if (expression[pos] == '.'){
-            isFrac = true;
-        } else if (!isFrac) {
-            value *= 10;
-            value += expression[pos].digitValue();
-        } else {
-            div *= 10;
-            frac += expression[pos].digitValue() / div;
-        }
-
-        pos++;
-    }
-
-    return value+frac;
-}
-
-// TODO: Подписать ошибки
+//     return value+frac;
+// }
 
 void MainWindow::on_actionButton_equal_clicked()
 {
@@ -157,68 +172,18 @@ void MainWindow::on_actionButton_equal_clicked()
         return;
     }
 
-    QString expression = ui->calculatorLine->text();
-    expression.replace("÷", "/");
-    expression.replace("×", "*");
-    expression.replace(",", ".");
-    expression.replace(" ", "");
+    QString currentCalculatorLineText = ui->calculatorLine->text();
+    double operand = currentCalculatorLineText.toDouble();
 
-    if (expression.isEmpty()) {
-        ui->calculatorLine->setText("Ошибка");
-        needClear = true;
-        return;
-    } else {
-        int position = 0;
+    if (!pendingOperator.isEmpty()) {
+        currentResult = calculate(currentResult, pendingOperator, operand);
 
-        double num1 = findNumber(expression, position);
-        if (position >= expression.length()) {
-            ui->calculatorLine->setText("Ошибка");
-            needClear = true;
-            return;
-        }
+        QString resultStr;
+        resultStr.setNum(currentResult);
+        ui->calculatorLine->setText(resultStr);
 
-        QChar op = expression[position++];
-        if (position >= expression.length()) {
-            ui->calculatorLine->setText("Ошибка");
-            needClear = true;
-            return;
-        }
-
-        double num2 = findNumber(expression, position);
-        if (position < expression.length()) {
-            ui->calculatorLine->setText("Ошибка");
-            needClear = true;
-            return;
-        }
-
-        double result = 0.0;
-
-        if (op == '+') {
-            result = num1 + num2;
-        } else if (op == '-') {
-            result = num1 - num2;
-        } else if (op == '/') {
-            if (num2 != 0) {
-                result = num1 / num2;
-            } else {
-                ui->calculatorLine->setText("Ошибка");
-                needClear = true;
-                return;
-            }
-        } else if (op == '*') {
-            result = num1 * num2;
-        } else {
-            ui->calculatorLine->setText("Ошибка");
-            needClear = true;
-            return;
-        }
-
-        QString strResult;
-        strResult.setNum(result);
-
-        ui->calculatorLine->setText(strResult.replace(".", ","));
+        pendingOperator = "";
+        isWaitingOperand = true;
     }
-
-    needClear = true;
 }
 
