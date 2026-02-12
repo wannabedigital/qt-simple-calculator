@@ -38,14 +38,18 @@ private slots:
 
     void on_actionButton_cos_clicked();
 
+    void on_actionButton_nRoot_clicked();
+
 private:
     Ui::MainWindow *ui;
 
     double currentResult = 0;
 
     QString pendingOperator = "";
-
     bool isWaitingOperand = true;
     bool needClear = false;
+
+    double rootDegree = 0;
+    bool isEnteringRootDegree = false;
 };
 #endif // MAINWINDOW_H

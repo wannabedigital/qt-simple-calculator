@@ -48,6 +48,7 @@ void MainWindow::on_actionButton_allClear_clicked()
     pendingOperator = "";
     isWaitingOperand = true;
     needClear = false;
+    isEnteringRootDegree = false;
 }
 
 void MainWindow::onDigitButtonClicked()
@@ -180,8 +181,10 @@ void MainWindow::on_actionButton_equal_clicked()
 void MainWindow::on_actionButton_negate_clicked()
 {
     QString currentCalculatorLineText = ui->calculatorLine->text();
-    if (currentCalculatorLineText.isEmpty() || currentCalculatorLineText == "0") return;
-
+    if (currentCalculatorLineText.isEmpty()) {
+        ui->calculatorLine->setText("Сначала введите число");
+        return;
+    }
     double negateNum = currentCalculatorLineText.toDouble() * (-1);
 
     QString strNegateNum;
@@ -217,6 +220,66 @@ void MainWindow::on_actionButton_cos_clicked()
         ui->calculatorLine->setText(strCosNum);
     } else {
         ui->calculatorLine->setText("Сначала введите число в радианах");
+    }
+}
+
+
+void MainWindow::on_actionButton_nRoot_clicked()
+{
+    if (isEnteringRootDegree) {
+        QString currentText = ui->calculatorLine->text();
+        if (currentText.isEmpty()) return;
+
+        double radicand = currentText.toDouble();
+        if (rootDegree <= 0) {
+            ui->calculatorLine->setText("Неправильная степень корня");
+            isEnteringRootDegree = false;
+            return;
+        }
+
+        double result = std::pow(radicand, 1.0 / rootDegree);
+        QString resultStr;
+        resultStr.setNum(result);
+
+        QString degreeStr;
+        degreeStr.setNum(rootDegree);
+        QString prettyDegree = degreeStr;
+        prettyDegree
+            .replace("0","⁰")
+            .replace("1","¹")
+            .replace("2", "²")
+            .replace("3", "³")
+            .replace("4", "⁴")
+            .replace("5", "⁵")
+            .replace("6", "⁶")
+            .replace("7", "⁷")
+            .replace("8", "⁸")
+            .replace("9", "⁹");
+
+        ui->displayExpressionLine->setText(prettyDegree + "√" + currentText + " =");
+        ui->calculatorLine->setText(resultStr);
+
+        isEnteringRootDegree = false;
+        isWaitingOperand = true;
+        needClear = true;
+
+    } else {
+        QString currentText = ui->calculatorLine->text();
+        if (currentText.isEmpty()) {
+            ui->calculatorLine->setText("Введите степень корня");
+            return;
+        }
+
+        rootDegree = currentText.toDouble();
+        if (rootDegree <= 0) {
+            ui->calculatorLine->setText("Неправильная степень корня");
+            return;
+        }
+
+        ui->displayExpressionLine->setText("Степень: " + currentText + ". Введите число:");
+        ui->calculatorLine->clear();
+        isEnteringRootDegree = true;
+        isWaitingOperand = false;
     }
 }
 
