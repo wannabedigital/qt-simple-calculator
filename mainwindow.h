@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <cmath>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -36,6 +35,8 @@ private slots:
     void on_actionButton_negate_clicked();
 
     void on_actionButton_percent_clicked();
+
+    void on_actionButton_cos_clicked();
 
 private:
     Ui::MainWindow *ui;

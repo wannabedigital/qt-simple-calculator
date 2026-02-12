@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <cmath>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -201,5 +202,21 @@ void MainWindow::on_actionButton_percent_clicked()
     strPercentNum.setNum(percentNum);
 
     ui->calculatorLine->setText(strPercentNum);
+}
+
+
+void MainWindow::on_actionButton_cos_clicked()
+{
+    QString currentCalculatorLineText = ui->calculatorLine->text();
+    if (!currentCalculatorLineText.isEmpty()) {
+        double currentNum = currentCalculatorLineText.toDouble();
+        double cosNum = std::cos(currentNum);
+        QString strCosNum;
+        strCosNum.setNum(cosNum);
+        ui->displayExpressionLine->setText("cos(" + currentCalculatorLineText + ") =");
+        ui->calculatorLine->setText(strCosNum);
+    } else {
+        ui->calculatorLine->setText("Сначала введите число в радианах");
+    }
 }
 
