@@ -160,6 +160,16 @@ void MainWindow::on_actionButton_equal_clicked()
     QString currentCalculatorLineText = ui->calculatorLine->text();
     double operand = currentCalculatorLineText.toDouble();
 
+    if (isEnteringRate) {
+        on_actionButton_np_clicked();
+        return;
+    }
+
+    if (isEnteringRootDegree) {
+        on_actionButton_nRoot_clicked();
+        return;
+    }
+
     if (!pendingOperator.isEmpty()) {
         currentResult = calculate(currentResult, pendingOperator, operand);
 
