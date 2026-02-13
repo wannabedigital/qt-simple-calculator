@@ -228,10 +228,10 @@ void MainWindow::on_actionButton_cos_clicked()
 void MainWindow::on_actionButton_nRoot_clicked()
 {
     if (isEnteringRootDegree) {
-        QString currentText = ui->calculatorLine->text();
-        if (currentText.isEmpty()) return;
+        QString currentCalculatorLineText = ui->calculatorLine->text();
+        if (currentCalculatorLineText.isEmpty()) return;
 
-        double radicand = currentText.toDouble();
+        double radicand = currentCalculatorLineText.toDouble();
         if (rootDegree <= 0) {
             ui->calculatorLine->setText("Неправильная степень корня");
             isEnteringRootDegree = false;
@@ -257,7 +257,7 @@ void MainWindow::on_actionButton_nRoot_clicked()
             .replace("8", "⁸")
             .replace("9", "⁹");
 
-        ui->displayExpressionLine->setText(prettyDegree + "√" + currentText + " =");
+        ui->displayExpressionLine->setText(prettyDegree + "√" + currentCalculatorLineText + " =");
         ui->calculatorLine->setText(resultStr);
 
         isEnteringRootDegree = false;
@@ -265,13 +265,13 @@ void MainWindow::on_actionButton_nRoot_clicked()
         needClear = true;
 
     } else {
-        QString currentText = ui->calculatorLine->text();
-        if (currentText.isEmpty()) {
+        QString currentCalculatorLineText = ui->calculatorLine->text();
+        if (currentCalculatorLineText.isEmpty()) {
             ui->calculatorLine->setText("Введите степень корня");
             return;
         }
 
-        rootDegree = currentText.toDouble();
+        rootDegree = currentCalculatorLineText.toDouble();
         if (rootDegree <= 0) {
             ui->calculatorLine->setText("Неправильная степень корня");
             return;
@@ -304,10 +304,10 @@ void MainWindow::on_actionButton_nRoot_clicked()
 void MainWindow::on_actionButton_np_clicked()
 {
     if (isEnteringRate) {
-        QString currentText = ui->calculatorLine->text();
-        if (currentText.isEmpty()) return;
+        QString currentCalculatorLineText = ui->calculatorLine->text();
+        if (currentCalculatorLineText.isEmpty()) return;
 
-        double base = currentText.toDouble();
+        double base = currentCalculatorLineText.toDouble();
         if (rate < 0) {
             ui->calculatorLine->setText("Направильный процент от числа");
             isEnteringRate = false;
@@ -321,7 +321,7 @@ void MainWindow::on_actionButton_np_clicked()
         QString rateStr;
         rateStr.setNum(rate);
 
-        ui->displayExpressionLine->setText(rateStr + "% от " + currentText + " =");
+        ui->displayExpressionLine->setText(rateStr + "% от " + currentCalculatorLineText + " =");
         ui->calculatorLine->setText(resultStr);
 
         isEnteringRate = false;
@@ -329,19 +329,19 @@ void MainWindow::on_actionButton_np_clicked()
         needClear = true;
 
     } else {
-        QString currentText = ui->calculatorLine->text();
-        if (currentText.isEmpty()) {
+        QString currentCalculatorLineText = ui->calculatorLine->text();
+        if (currentCalculatorLineText.isEmpty()) {
             ui->calculatorLine->setText("Введите процент от числа");
             return;
         }
 
-        rate = currentText.toDouble();
+        rate = currentCalculatorLineText.toDouble();
         if (rate < 0) {
             ui->calculatorLine->setText("Направильный процент от числа");
             return;
         }
 
-        ui->displayExpressionLine->setText(currentText + "%" + ". Введите число:");
+        ui->displayExpressionLine->setText(currentCalculatorLineText + "%" + ". Введите число:");
         ui->calculatorLine->clear();
         isEnteringRate = true;
         isWaitingOperand = false;
