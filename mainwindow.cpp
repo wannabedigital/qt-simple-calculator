@@ -49,6 +49,7 @@ void MainWindow::on_actionButton_allClear_clicked()
     isWaitingOperand = true;
     needClear = false;
     isEnteringRootDegree = false;
+    isEnteringRate = false;
 }
 
 void MainWindow::onDigitButtonClicked()
@@ -276,9 +277,73 @@ void MainWindow::on_actionButton_nRoot_clicked()
             return;
         }
 
-        ui->displayExpressionLine->setText("Степень: " + currentText + ". Введите число:");
+        QString degreeStr;
+        degreeStr.setNum(rootDegree);
+
+        QString prettyDegree = degreeStr;
+        prettyDegree
+            .replace("0","⁰")
+            .replace("1","¹")
+            .replace("2", "²")
+            .replace("3", "³")
+            .replace("4", "⁴")
+            .replace("5", "⁵")
+            .replace("6", "⁶")
+            .replace("7", "⁷")
+            .replace("8", "⁸")
+            .replace("9", "⁹");
+
+        ui->displayExpressionLine->setText(prettyDegree + "√" + ". Введите число:");
         ui->calculatorLine->clear();
         isEnteringRootDegree = true;
+        isWaitingOperand = false;
+    }
+}
+
+
+void MainWindow::on_actionButton_np_clicked()
+{
+    if (isEnteringRate) {
+        QString currentText = ui->calculatorLine->text();
+        if (currentText.isEmpty()) return;
+
+        double base = currentText.toDouble();
+        if (rate < 0) {
+            ui->calculatorLine->setText("Направильный процент от числа");
+            isEnteringRate = false;
+            return;
+        }
+
+        double result = (base / 100) * rate;
+        QString resultStr;
+        resultStr.setNum(result);
+
+        QString rateStr;
+        rateStr.setNum(rate);
+
+        ui->displayExpressionLine->setText(rateStr + "% от " + currentText + " =");
+        ui->calculatorLine->setText(resultStr);
+
+        isEnteringRate = false;
+        isWaitingOperand = true;
+        needClear = true;
+
+    } else {
+        QString currentText = ui->calculatorLine->text();
+        if (currentText.isEmpty()) {
+            ui->calculatorLine->setText("Введите процент от числа");
+            return;
+        }
+
+        rate = currentText.toDouble();
+        if (rate < 0) {
+            ui->calculatorLine->setText("Направильный процент от числа");
+            return;
+        }
+
+        ui->displayExpressionLine->setText(currentText + "%" + ". Введите число:");
+        ui->calculatorLine->clear();
+        isEnteringRate = true;
         isWaitingOperand = false;
     }
 }

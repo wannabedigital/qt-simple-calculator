@@ -40,6 +40,8 @@ private slots:
 
     void on_actionButton_nRoot_clicked();
 
+    void on_actionButton_np_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -51,5 +53,8 @@ private:
 
     double rootDegree = 0;
     bool isEnteringRootDegree = false;
+
+    double rate = 0;
+    bool isEnteringRate = false;
 };
 #endif // MAINWINDOW_H
