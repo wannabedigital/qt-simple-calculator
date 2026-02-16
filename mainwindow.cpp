@@ -206,6 +206,7 @@ void MainWindow::on_actionButton_negate_clicked()
         ui->calculatorLine->setText("Сначала введите число");
         return;
     }
+
     double negateNum = currentCalculatorLineText.toDouble() * (-1);
 
     QString strNegateNum;
@@ -259,9 +260,7 @@ void MainWindow::on_actionButton_nRoot_clicked()
             return;
         }
 
-        double result = rootMultiplier * std::pow(radicand, 1.0 / rootDegree);
-        QString resultStr;
-        resultStr.setNum(result);
+        double rootResult = rootMultiplier * std::pow(radicand, 1.0 / rootDegree);
 
         QString degreeStr;
         degreeStr.setNum(rootDegree);
@@ -279,19 +278,33 @@ void MainWindow::on_actionButton_nRoot_clicked()
             .replace("8", "⁸")
             .replace("9", "⁹");
 
+        QString rootExpression;
         if (rootMultiplier != 1.0) {
             QString strRootMultiplier;
             strRootMultiplier.setNum(rootMultiplier);
-            ui->displayExpressionLine->setText(
-                strRootMultiplier + " * " + prettyDegree + "√" + currentCalculatorLineText + " ="
-                );
+            rootExpression = strRootMultiplier + " * " + prettyDegree + "√" + currentCalculatorLineText;
         } else {
-            ui->displayExpressionLine->setText(
-                prettyDegree + "√" + currentCalculatorLineText + " ="
-                );
+            rootExpression = prettyDegree + "√" + currentCalculatorLineText;
         }
 
-        ui->calculatorLine->setText(resultStr);
+        if (!pendingOperator.isEmpty()) {
+            currentResult = calculate(currentResult, pendingOperator, rootResult);
+
+            QString resultStr;
+            resultStr.setNum(currentResult);
+            ui->calculatorLine->setText(resultStr);
+
+            QString prettyOperator = pendingOperator;
+            prettyOperator.replace("/","÷").replace("*","×");
+            ui->displayExpressionLine->setText(
+                QString::number(currentResult - rootResult) + " " + prettyOperator + " " + rootExpression + " ="
+                );
+
+            pendingOperator = "";
+        } else {
+            ui->calculatorLine->setText(QString::number(rootResult));
+            ui->displayExpressionLine->setText(rootExpression + " =");
+        }
 
         isEnteringRootDegree = false;
         isRootDegreeConfirmed = false;
@@ -337,10 +350,14 @@ void MainWindow::on_actionButton_nRoot_clicked()
     else {
         QString currentCalculatorLineText = ui->calculatorLine->text();
 
-        if (currentCalculatorLineText.isEmpty()) {
+        if (!pendingOperator.isEmpty()) {
             rootMultiplier = 1.0;
-        } else {
+        }
+        else if (!currentCalculatorLineText.isEmpty()) {
             rootMultiplier = currentCalculatorLineText.toDouble();
+        }
+        else {
+            rootMultiplier = 1.0;
         }
 
         ui->displayExpressionLine->setText("Введите степень корня");
@@ -368,26 +385,38 @@ void MainWindow::on_actionButton_np_clicked()
             return;
         }
 
-        double result = percentMultiplier * (base * rate / 100.0);
-        QString resultStr;
-        resultStr.setNum(result);
+        double percentResult = percentMultiplier * (base * rate / 100.0);
 
         QString strRate;
         strRate.setNum(rate);
 
+        QString percentExpression;
         if (percentMultiplier != 1.0) {
             QString strPercentMultiplier;
             strPercentMultiplier.setNum(percentMultiplier);
-            ui->displayExpressionLine->setText(
-                strPercentMultiplier + " * " + strRate + "% от " + currentCalculatorLineText + " ="
-                );
+            percentExpression = strPercentMultiplier + " * " + strRate + "% от " + currentCalculatorLineText;
         } else {
-            ui->displayExpressionLine->setText(
-                strRate + "% от " + currentCalculatorLineText + " ="
-                );
+            percentExpression = strRate + "% от " + currentCalculatorLineText;
         }
 
-        ui->calculatorLine->setText(resultStr);
+        if (!pendingOperator.isEmpty()) {
+            currentResult = calculate(currentResult, pendingOperator, percentResult);
+
+            QString resultStr;
+            resultStr.setNum(currentResult);
+            ui->calculatorLine->setText(resultStr);
+
+            QString prettyOperator = pendingOperator;
+            prettyOperator.replace("/","÷").replace("*","×");
+            ui->displayExpressionLine->setText(
+                QString::number(currentResult - percentResult) + " " + prettyOperator + " " + percentExpression + " ="
+                );
+
+            pendingOperator = "";
+        } else {
+            ui->calculatorLine->setText(QString::number(percentResult));
+            ui->displayExpressionLine->setText(percentExpression + " =");
+        }
 
         isEnteringRate = false;
         isPercentRateConfirmed = false;
@@ -418,13 +447,17 @@ void MainWindow::on_actionButton_np_clicked()
         isPercentRateConfirmed = true;
         isWaitingOperand = false;
     }
-
     else {
         QString currentCalculatorLineText = ui->calculatorLine->text();
-        if (currentCalculatorLineText.isEmpty()) {
+
+        if (!pendingOperator.isEmpty()) {
             percentMultiplier = 1.0;
-        } else {
+        }
+        else if (!currentCalculatorLineText.isEmpty()) {
             percentMultiplier = currentCalculatorLineText.toDouble();
+        }
+        else {
+            percentMultiplier = 1.0;
         }
 
         ui->displayExpressionLine->setText("Введите процент");
