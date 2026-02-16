@@ -52,9 +52,13 @@ private:
     bool needClear = false;
 
     double rootDegree = 0;
+    double rootMultiplier = 0;
     bool isEnteringRootDegree = false;
+    bool isRootDegreeConfirmed = false;
 
     double rate = 0;
+    double percentMultiplier = 0;
     bool isEnteringRate = false;
+    bool isPercentRateConfirmed = false;
 };
 #endif // MAINWINDOW_H
