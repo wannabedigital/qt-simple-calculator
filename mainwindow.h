@@ -60,5 +60,9 @@ private:
     double percentMultiplier = 0;
     bool isEnteringRate = false;
     bool isPercentRateConfirmed = false;
+
+    double cosAngle = 0;
+    double cosMultiplier = 0;
+    bool isEnteringCos = false;
 };
 #endif // MAINWINDOW_H

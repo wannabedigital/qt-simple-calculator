@@ -56,6 +56,9 @@ void MainWindow::on_actionButton_allClear_clicked()
     isPercentRateConfirmed = false;
     rate = 0;
     percentMultiplier = 0;
+    isEnteringCos = false;
+    cosAngle = 0;
+    cosMultiplier = 0;
 }
 
 void MainWindow::onDigitButtonClicked()
@@ -68,7 +71,7 @@ void MainWindow::onDigitButtonClicked()
     QPushButton *button = (QPushButton *)(sender());
     if (!button) return;
 
-    if (isWaitingOperand && !isEnteringRootDegree && !isEnteringRate) {
+    if (isWaitingOperand && !isEnteringRootDegree && !isEnteringRate && !isEnteringCos) {
         ui->calculatorLine->clear();
         isWaitingOperand = false;
     }
@@ -104,7 +107,7 @@ double MainWindow::calculate(double leftOperand, const QString &pendingOperator,
 
 void MainWindow::mathOperation()
 {
-    if (isEnteringRootDegree || isEnteringRate) {
+    if (isEnteringRootDegree || isEnteringRate || isEnteringCos) {
         on_actionButton_allClear_clicked();
     }
 
@@ -180,6 +183,11 @@ void MainWindow::on_actionButton_equal_clicked()
         return;
     }
 
+    if (isEnteringCos) {
+        on_actionButton_cos_clicked();
+        return;
+    }
+
     if (!pendingOperator.isEmpty()) {
         currentResult = calculate(currentResult, pendingOperator, operand);
 
@@ -195,6 +203,9 @@ void MainWindow::on_actionButton_equal_clicked()
         pendingOperator = "";
         isWaitingOperand = true;
         needClear = true;
+    } else {
+        ui->calculatorLine->setText(currentCalculatorLineText);
+        ui->displayExpressionLine->setText(currentCalculatorLineText + " =");
     }
 }
 
@@ -232,16 +243,66 @@ void MainWindow::on_actionButton_percent_clicked()
 
 void MainWindow::on_actionButton_cos_clicked()
 {
-    QString currentCalculatorLineText = ui->calculatorLine->text();
-    if (!currentCalculatorLineText.isEmpty()) {
-        double currentNum = currentCalculatorLineText.toDouble();
-        double cosNum = std::cos(currentNum);
-        QString strCosNum;
-        strCosNum.setNum(cosNum);
-        ui->displayExpressionLine->setText("cos(" + currentCalculatorLineText + ") =");
-        ui->calculatorLine->setText(strCosNum);
+    if (isEnteringCos) {
+        QString currentCalculatorLineText = ui->calculatorLine->text();
+        if (currentCalculatorLineText.isEmpty()) return;
+
+        cosAngle = currentCalculatorLineText.toDouble();
+        double cosResult = cosMultiplier * std::cos(cosAngle);
+
+        QString resultStr;
+        resultStr.setNum(cosResult);
+
+        QString cosExpression;
+        if (cosMultiplier != 1.0) {
+            QString strCosMultiplier;
+            strCosMultiplier.setNum(cosMultiplier);
+            cosExpression = strCosMultiplier + " * cos(" + currentCalculatorLineText + ")";
+        } else {
+            cosExpression = "cos(" + currentCalculatorLineText + ")";
+        }
+
+        if (!pendingOperator.isEmpty()) {
+            currentResult = calculate(currentResult, pendingOperator, cosResult);
+
+            QString resultStr;
+            resultStr.setNum(currentResult);
+            ui->calculatorLine->setText(resultStr);
+
+            QString prettyOperator = pendingOperator;
+            prettyOperator.replace("/","÷").replace("*","×");
+            ui->displayExpressionLine->setText(
+                QString::number(currentResult - cosResult) + " " + prettyOperator + " " + cosExpression + " ="
+                );
+
+            pendingOperator = "";
+        } else {
+            ui->calculatorLine->setText(resultStr);
+            ui->displayExpressionLine->setText(cosExpression + " =");
+        }
+
+        isEnteringCos = false;
+        isWaitingOperand = true;
+        needClear = true;
+        cosMultiplier = 0;
+        cosAngle = 0;
     } else {
-        ui->calculatorLine->setText("Сначала введите число в радианах");
+        QString currentCalculatorLineText = ui->calculatorLine->text();
+
+        if (!pendingOperator.isEmpty()) {
+            cosMultiplier = 1.0;
+        } else if (!currentCalculatorLineText.isEmpty()) {
+            cosMultiplier = currentCalculatorLineText.toDouble();
+        } else {
+            cosMultiplier = 1.0;
+        }
+
+        ui->displayExpressionLine->setText("Введите угол (в радианах)");
+
+        ui->calculatorLine->clear();
+        isEnteringCos = true;
+        isWaitingOperand = false;
+        needClear = false;
     }
 }
 
@@ -312,8 +373,7 @@ void MainWindow::on_actionButton_nRoot_clicked()
         needClear = true;
         rootMultiplier = 0;
         rootDegree = 0;
-    }
-    else if (isEnteringRootDegree && !isRootDegreeConfirmed) {
+    } else if (isEnteringRootDegree && !isRootDegreeConfirmed) {
         QString currentCalculatorLineText = ui->calculatorLine->text();
         if (currentCalculatorLineText.isEmpty()) {
             ui->calculatorLine->setText("Введите степень корня");
@@ -346,8 +406,7 @@ void MainWindow::on_actionButton_nRoot_clicked()
         ui->calculatorLine->clear();
         isRootDegreeConfirmed = true;
         isWaitingOperand = false;
-    }
-    else {
+    } else {
         QString currentCalculatorLineText = ui->calculatorLine->text();
 
         if (!pendingOperator.isEmpty()) {
@@ -424,8 +483,7 @@ void MainWindow::on_actionButton_np_clicked()
         needClear = true;
         percentMultiplier = 0;
         rate = 0;
-    }
-    else if (isEnteringRate && !isPercentRateConfirmed) {
+    } else if (isEnteringRate && !isPercentRateConfirmed) {
         QString currentCalculatorLineText = ui->calculatorLine->text();
         if (currentCalculatorLineText.isEmpty()) {
             ui->calculatorLine->setText("Введите процент");
@@ -446,8 +504,7 @@ void MainWindow::on_actionButton_np_clicked()
         ui->calculatorLine->clear();
         isPercentRateConfirmed = true;
         isWaitingOperand = false;
-    }
-    else {
+    } else {
         QString currentCalculatorLineText = ui->calculatorLine->text();
 
         if (!pendingOperator.isEmpty()) {
