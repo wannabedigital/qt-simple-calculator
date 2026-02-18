@@ -263,6 +263,7 @@ void MainWindow::on_actionButton_cos_clicked()
         }
 
         if (!pendingOperator.isEmpty()) {
+            double leftOperand = currentResult;
             currentResult = calculate(currentResult, pendingOperator, cosResult);
 
             QString resultStr;
@@ -271,8 +272,12 @@ void MainWindow::on_actionButton_cos_clicked()
 
             QString prettyOperator = pendingOperator;
             prettyOperator.replace("/","÷").replace("*","×");
+
+            QString strLeftOperand;
+            strLeftOperand.setNum(leftOperand);
+
             ui->displayExpressionLine->setText(
-                QString::number(currentResult - cosResult) + " " + prettyOperator + " " + cosExpression + " ="
+                strLeftOperand + " " + prettyOperator + " " + cosExpression + " ="
                 );
 
             pendingOperator = "";
@@ -349,6 +354,7 @@ void MainWindow::on_actionButton_nRoot_clicked()
         }
 
         if (!pendingOperator.isEmpty()) {
+            double leftOperand = currentResult;
             currentResult = calculate(currentResult, pendingOperator, rootResult);
 
             QString resultStr;
@@ -357,8 +363,12 @@ void MainWindow::on_actionButton_nRoot_clicked()
 
             QString prettyOperator = pendingOperator;
             prettyOperator.replace("/","÷").replace("*","×");
+
+            QString strLeftOperand;
+            strLeftOperand.setNum(leftOperand);
+
             ui->displayExpressionLine->setText(
-                QString::number(currentResult - rootResult) + " " + prettyOperator + " " + rootExpression + " ="
+                strLeftOperand + " " + prettyOperator + " " + rootExpression + " ="
                 );
 
             pendingOperator = "";
@@ -459,6 +469,7 @@ void MainWindow::on_actionButton_np_clicked()
         }
 
         if (!pendingOperator.isEmpty()) {
+            double leftOperand = currentResult;
             currentResult = calculate(currentResult, pendingOperator, percentResult);
 
             QString resultStr;
@@ -467,8 +478,12 @@ void MainWindow::on_actionButton_np_clicked()
 
             QString prettyOperator = pendingOperator;
             prettyOperator.replace("/","÷").replace("*","×");
+
+            QString strLeftOperand;
+            strLeftOperand.setNum(leftOperand);
+
             ui->displayExpressionLine->setText(
-                QString::number(currentResult - percentResult) + " " + prettyOperator + " " + percentExpression + " ="
+                strLeftOperand + " " + prettyOperator + " " + percentExpression + " ="
                 );
 
             pendingOperator = "";
