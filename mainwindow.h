@@ -18,6 +18,8 @@ public:
     ~MainWindow();
 
 private slots:
+    void updateDisplay();
+
     void onDigitButtonClicked();
 
     void mathOperation();
@@ -44,6 +46,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    QString currentExpression = "";
+    QString currentInput = "";
 
     double currentResult = 0;
 
